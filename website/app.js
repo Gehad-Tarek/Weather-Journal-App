@@ -1,6 +1,6 @@
 /* Global Variables */
 const generateButton = document.getElementById('generate'),
-    zipCode = document.getElementById('zip'),
+    zip = document.getElementById('zip'),
     feelings = document.getElementById('feelings'),
     date = document.getElementById('date'),
     temp = document.getElementById('temp'),
@@ -10,10 +10,13 @@ const generateButton = document.getElementById('generate'),
 let d = new Date();
 let newDate = d.getMonth() + '.' + d.getDate() + '.' + d.getFullYear();
 
-let apiUrl = `https://api.openweathermap.org/data/2.5/weather?zip=85005&units=metric&appid=3bc0528166321016e15696f8f027edd0`;
+let apiUrl = 'https://api.openweathermap.org/data/2.5/weather?zip=';
+const apiKey = '&units=metric&appid=3bc0528166321016e15696f8f027edd0';
+const zipcode = zip.value;
+const API = apiUrl + zipcode + apiKey;
 
-const getData = async () => {
-    const request = await fetch(apiUrl);
+const getData = async (API) => {
+    const request = await fetch(API);
     try {
         const response = await request.json();
         return response;
@@ -46,9 +49,9 @@ const UpdateData = async () => {
     try {
         const res = await req.json();
         console.log(res);
-        date.innerHTML += res[0].date;
-        temp.innerHTML += res[0].temp;
-        content.innerHTML += res[0].content;
+        date.innerHTML = `Date: ${res.date}`;
+        temp.innerHTML = `Temp: ${res.temp}`;
+        content.innerHTML = `I feel I am: ${res.content}`;
     } catch (error) {
         console.log(error);
     }
@@ -57,10 +60,13 @@ const UpdateData = async () => {
 generateButton.addEventListener('click', performAction);
 
 function performAction() {
-    if (zipCode.value == '') {
+    if (zip.value == '') {
         alert('please Enter zip code');
     } else {
-        getData().then((data) => {
+        // Here is the Problem
+        // console.log(zipcode);  // empty string
+        getData(API).then((data) => {
+            // console.log(data.main.temp);      // log undefined
             postData('/addData', { date: d, temp: data.main.temp, content: feelings.value })
         }).then(() => UpdateData());
     }
