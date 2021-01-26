@@ -12,11 +12,9 @@ let newDate = d.getMonth() + '.' + d.getDate() + '.' + d.getFullYear();
 
 let apiUrl = 'https://api.openweathermap.org/data/2.5/weather?zip=';
 const apiKey = '&units=metric&appid=3bc0528166321016e15696f8f027edd0';
-const zipcode = zip.value;
-const API = apiUrl + zipcode + apiKey;
 
-const getData = async (API) => {
-    const request = await fetch(API);
+const getData = async (zipcode) => {
+    const request = await fetch(apiUrl + zipcode + apiKey);
     try {
         const response = await request.json();
         return response;
@@ -60,14 +58,13 @@ const UpdateData = async () => {
 generateButton.addEventListener('click', performAction);
 
 function performAction() {
-    if (zip.value == '') {
+    const zipcode = zip.value;
+    if (zipcode == '') {
         alert('please Enter zip code');
     } else {
-        // Here is the Problem
-        // console.log(zipcode);  // empty string
-        getData(API).then((data) => {
-            // console.log(data.main.temp);      // log undefined
-            postData('/addData', { date: d, temp: data.main.temp, content: feelings.value })
+        // console.log(zipcode);
+        getData(zipcode).then((data) => {
+            postData('/addData', { date: newDate, temp: data.main.temp, content: feelings.value })
         }).then(() => UpdateData());
     }
 }
